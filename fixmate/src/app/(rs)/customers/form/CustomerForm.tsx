@@ -86,7 +86,7 @@ const CustomerForm = ({ customer }: Props) => {
               fieldTitle="Notes" nameInSchema='notes' className='h-40 resize-none' />
             <div className='flex gap-2'>
               <Button type='submit' className='w-3/4' variant="default" title='Save'>
-                Submit
+                Save
               </Button>
               <Button type='button' variant="destructive" title='Reset' onClick={() => form.reset(defaultValues)}>
                 Reset
