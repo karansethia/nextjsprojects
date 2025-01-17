@@ -2,6 +2,7 @@ import Link from 'next/link'
 import React from 'react'
 
 const Home = () => {
+  console.log("new homepage to be designed in exmple feature branch")
   return (
     <div className='bg-gray-900'>
       <main className='flex flex-col justify-center text-center max-w-5xl mx-auto h-dvh'>
