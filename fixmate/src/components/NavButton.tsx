@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 
 type Props = {
-icon: LucideIcon,
+  icon: LucideIcon,
   label: string,
   href?: string
 }
@@ -18,8 +18,8 @@ const NavButton = ({ icon: Icon, label, href }: Props) => {
       className="rounded-full"
       asChild
     >
-      {href ? <Link href={href}> 
-      <Icon />
+      {href ? <Link href={href}>
+        <Icon />
       </Link> : <Icon />}
     </Button>
   )

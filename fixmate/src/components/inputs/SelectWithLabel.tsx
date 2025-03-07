@@ -27,7 +27,7 @@ import React from 'react'
 import { cn } from "@/lib/utils"
 
 const SelectWithLabel = <S,>({
-  fieldTitle, nameInSchema, data, className, ...props
+  fieldTitle, nameInSchema, data, className
 }: Props<S>) => {
 
   const form = useFormContext()

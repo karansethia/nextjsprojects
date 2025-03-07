@@ -11,8 +11,14 @@ import { type InsertCustomerSchemaType, insertCustomerSchema, type SelectCustome
 import TextareaWithLabel from '@/components/inputs/TextareaWithLabel'
 import SelectWithLabel from '@/components/inputs/SelectWithLabel'
 import CheckboxWithLabel from '@/components/inputs/CheckboxWithLabel'
+import { Loader2 } from 'lucide-react'
 
 import { StatesArray } from '@/constants/statesArray'
+
+import { useAction } from 'next-safe-action/hooks'
+import { saveCustomerAction } from '@/app/actions/saveCustomerAction'
+import { useToast } from '@/hooks/use-toast'
+
 
 type Props = {
   customer?: SelectCustomerSchemaType,
@@ -23,6 +29,8 @@ const CustomerForm = ({ customer }: Props) => {
   const { getPermission,
     // getPermissions,
     isLoading } = useKindeBrowserClient()
+
+  const { toast } = useToast()
 
   /*
    * If you want to verify different permissions for eg a person needs to be
@@ -51,8 +59,28 @@ const CustomerForm = ({ customer }: Props) => {
     defaultValues
   })
 
+  const { execute: executeSave,
+    result: saveResult,
+    isExecuting: isSaving,
+    reset: resetSaveAction } = useAction(saveCustomerAction, {
+      onSuccess({ data }) {
+        toast({
+          variant: "default",
+          title: "Success!!",
+          description: data?.message
+        })
+      },
+      onError() {
+        toast({
+          variant: "destructive",
+          title: "Success!!",
+          description: "Something went wrong"
+        })
+      }
+    })
+
   const submitHandler = async (formData: InsertCustomerSchemaType) => {
-    console.log(formData)
+    executeSave(formData)
   }
 
   return (
@@ -99,13 +127,22 @@ const CustomerForm = ({ customer }: Props) => {
               nameInSchema='phone' />
             <TextareaWithLabel<InsertCustomerSchemaType>
               fieldTitle="Notes" nameInSchema='notes' className='h-40 resize-none' />
-            {!isLoading && isManager && <CheckboxWithLabel<InsertCustomerSchemaType>
-              fieldTitle="Active" nameInSchema='active' message='Yes' />}
+            {isLoading ? <p>Loading...</p> : isManager && customer?.id ? (
+              <CheckboxWithLabel<InsertCustomerSchemaType>
+                fieldTitle="Active"
+                nameInSchema="active"
+                message="Yes"
+              />) : null}
             <div className='flex gap-2'>
-              <Button type='submit' className='w-3/4' variant="default" title='Save'>
-                Save
+              <Button type='submit' disabled={isSaving} className='w-3/4' variant="default" title='Save'>
+                {isSaving ? (
+                  <><Loader2 className='animate-spin' /> Saving</>
+                ) : "Save"}
               </Button>
-              <Button type='button' variant="destructive" title='Reset' onClick={() => form.reset(defaultValues)}>
+              <Button type='button' variant="destructive" title='Reset' onClick={() => {
+                form.reset(defaultValues)
+                resetSaveAction()
+              }}>
                 Reset
               </Button>
             </div>

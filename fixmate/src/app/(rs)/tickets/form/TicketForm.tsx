@@ -20,10 +20,18 @@ import CheckboxWithLabel from '@/components/inputs/CheckboxWithLabel'
 
 type Props = {
   customer: SelectCustomerSchemaType,
-  ticket?: SelectTicketSchemaType
+  ticket?: SelectTicketSchemaType,
+  isEditable?: boolean,
+  techs?: {
+    id: string,
+    description: string;
+  }[]
 }
 
-const TicketForm = ({ customer, ticket }: Props) => {
+const TicketForm = ({ customer, ticket, techs, isEditable = true }: Props) => {
+
+  const isManager = Array.isArray(techs)
+
   const defaultValues: InsertTicketSchemaType = {
     id: ticket?.id ?? "(New)",
     customerId: ticket?.customerId ?? customer.id,
@@ -47,9 +55,11 @@ const TicketForm = ({ customer, ticket }: Props) => {
     <div className='flex flex-col gap-1 sm:px-8'>
       <div>
         <h2 className='text-2xl font-bold'>
-          {ticket?.id
+          {ticket?.id && isEditable
             ? `Edit Ticket # ${ticket.id}`
-            : "New Ticket Form"
+            : ticket?.id
+              ? `View Ticket # ${ticket.id}`
+              : "New Ticket Form"
           }
         </h2>
       </div>
@@ -60,12 +70,25 @@ const TicketForm = ({ customer, ticket }: Props) => {
           <div className='flex flex-col gap-4 w-full max-w-xs'>
             <InputWithLabel<InsertTicketSchemaType>
               fieldTitle="Title"
-              nameInSchema='title' />
-            <InputWithLabel<InsertTicketSchemaType>
-              fieldTitle="Techician"
-              nameInSchema='tech' disabled />
-            <CheckboxWithLabel<InsertTicketSchemaType>
-              fieldTitle="Completed" nameInSchema='completed' message='Yes' />
+              nameInSchema='title' disabled={!isEditable} />
+
+            {isManager ? (
+              <SelectWithLabel<InsertTicketSchemaType>
+                fieldTitle='Tech ID' nameInSchema='tech'
+                data={[{ id: 'new-ticket@example.com', description: 'new-ticket@example.com' }, ...techs]} />
+            ) : (
+
+              <InputWithLabel<InsertTicketSchemaType>
+                fieldTitle="Techician"
+                nameInSchema='tech' disabled />
+            )}
+
+            {ticket?.id ? (
+              <CheckboxWithLabel<InsertTicketSchemaType>
+                fieldTitle="Completed" nameInSchema='completed'
+                message='Yes' disabled={!isEditable} />
+            ) : null}
+
             <div className="mt-4 space-y-2">
               <h3 className="text-lg">Customer Information</h3>
               <hr className="w-4/5" />
@@ -82,15 +105,18 @@ const TicketForm = ({ customer, ticket }: Props) => {
           <div className='flex flex-col gap-4 w-full max-w-xs'>
             <TextareaWithLabel<InsertTicketSchemaType>
               fieldTitle="Description"
-              nameInSchema='description' className='h-96 resize-none' />
-            <div className='flex gap-2'>
-              <Button type='submit' className='w-3/4' variant="default" title='Save'>
-                Submit
-              </Button>
-              <Button type='button' variant="destructive" title='Reset' onClick={() => form.reset(defaultValues)}>
-                Reset
-              </Button>
-            </div>
+              nameInSchema='description' className='h-96 resize-none' disabled={!isEditable} />
+
+            {isEditable && (
+              <div className='flex gap-2'>
+                <Button type='submit' className='w-3/4' variant="default" title='Save'>
+                  Submit
+                </Button>
+                <Button type='button' variant="destructive" title='Reset' onClick={() => form.reset(defaultValues)}>
+                  Reset
+                </Button>
+              </div>
+            )}
 
           </div>
         </form>

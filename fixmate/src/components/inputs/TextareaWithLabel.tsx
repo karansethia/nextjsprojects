@@ -18,6 +18,7 @@ type Props<S> = {
 } & TextareaHTMLAttributes<HTMLTextAreaElement>
 
 import React from 'react'
+import { cn } from "@/lib/utils"
 
 const TextareaWithLabel = <S,>({ fieldTitle, nameInSchema, className, ...props }: Props<S>) => {
 
@@ -35,7 +36,7 @@ const TextareaWithLabel = <S,>({ fieldTitle, nameInSchema, className, ...props }
           <FormControl>
             <Textarea
               id={nameInSchema}
-              className={className}
+              className={cn("disabled:text-blue-500 dark:disabled:text-yellow-500 disabled:opacity-75", className)}
               {...props}
               {...field}
             />
